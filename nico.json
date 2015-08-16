@@ -1,0 +1,28 @@
+{
+    "name": "dmxiaoshen's Blog",
+    "description": "dmxiaoshen's Blog",
+    "categorys": [{
+        "name": "note",
+        "showName": "笔记",
+        "description": "笔记"
+    }, {
+        "name": "suiwen",
+        "showName": "随文",
+        "description": "随文"
+    }],
+    "perpage": 10,
+    "sorttype": "desc",
+    "source": "post",
+    "output": "_site",
+    "theme": "_themes/SN",
+    "permalink": "{{directory}}/{{filename}}.html",
+    "writers": [
+        "nico.PostWriter",
+        "nico.FileWriter",
+        "nico.StaticWriter",
+        "nico.TagWriter",
+        "nico.DirectoryWriter",
+        "nico.ArchiveWriter"
+    ],
+    "trackCode": "<script defer async type=\"text/javascript\" src=\"//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787\"></script>"
+}

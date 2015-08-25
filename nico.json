@@ -3,17 +3,17 @@
     "description": "dmxiaoshen's Blog",
     "categorys": [{
         "name": "note",
-        "showName": "笔记",
-        "description": "笔记"
+        "showName": "晴耕",
+        "description": "晴耕"
     }, {
-        "name": "suiwen",
-        "showName": "随文",
-        "description": "随文"
+        "name": "article",
+        "showName": "雨读",
+        "description": "雨读"
     }],
     "perpage": 10,
     "sorttype": "desc",
     "source": "post",
-    "output": "_site",
+    "output": "www",
     "theme": "_themes/SN",
     "permalink": "{{directory}}/{{filename}}.html",
     "writers": [

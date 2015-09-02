@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>Java核心技术---排序</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">Java核心技术---排序</h2>
+<article>
+    <p>最近在看《Java核心技术这本书》，算是巩固下基础吧，网上有电子版PDF下载。推荐一个网址<strong><a href="http://www.pan1234.com">百度网盘搜索引擎</a></strong>，这里可以搜索大量资源。</p>
+<p>书目前看到第三章，里面讲java各种基本类型以及String和数组。突然心血来潮，想整理下java常规的几个排序。<strong>冒泡排序，选择排序，插入排序，快速排序</strong>。</p>
+<p>先普及下算法的时间复杂度是什么以及如何计算：</p>
+<blockquote>
+<p>一般来说,时间复杂度是总运算次数表达式中受n的变化影响最大的那一项(不含系数)
+比如：一般总运算次数表达式类似于这样：
+a*2^n+b*n^3+c*n^2+d*n*lg(n)+e*n+f
+a0时,时间复杂度就是O(2^n);
+a=0,b0 =&gt;O(n^3);
+a,b=0,c0 =&gt;O(n^2)依此类推
+那么,总运算次数又是如何计算出的呢?
+一般来说,我们经常使用for循环,就像刚才五个题,我们就以它们为例
+1.循环了n*n次,当然是O(n^2)
+2.循环了(n+n-1+n-2+...+1)≈(n^2)/2,因为时间复杂度是不考虑系数的,所以也是O(n^2)
+3.循环了(1+2+3+...+n)≈(n^2)/2,当然也是O(n^2)
+4.循环了n-1≈n次,所以是O(n)
+5.循环了(1^2+2^2+3^2+...+n^2)=n(n+1)(2n+1)/6(这个公式要记住哦)≈(n^3)/3,不考虑系数,自然是O(n^3)
+另外,在时间复杂度中,log(2,n)(以2为底)与lg(n)(以10为底)是等价的,因为对数换底公式：
+log(a,b)=log(c,b)/log(c,a)
+所以,log(2,n)=log(2,10)*lg(n),忽略掉系数,二者当然是等价的</p>
+</blockquote>
+<p><strong>常见时间复杂度:O(1)&lt;O(lg n)&lt;O(n)&lt;O(n lg n)&lt;O(n^2)&lt;O(n^3)&lt;O(2^n)</strong></p>
+<h2 id="冒泡排序">冒泡排序</h2><p>通俗点讲，冒泡排序就是相邻两数比较，大的放后面，这样一遍下来，<strong>最后的数</strong>就是最大的数，如此往复，直到元素从小到大有序排列。</p>
+<p>我们来思考下时间复杂度，假设有n个数：　　
+第1遍，遍历了n个数，共进行了n-1次比较。　　
+第2遍，遍历了n-1个数(最后一个已经排序),共需要n-2次比较。　　
+……
+第n-1遍，遍历了2个数，仅需1次比较。　　
+最后只剩一个数，无需遍历，它就是最小的。</p>
+<p>那么最后遍历共n-1遍,比较共（1+2+3+……+n-1）次。复杂度为（n-1)*(1+2+3+……+n-1),影响最大的项是n^2(系数忽略)。</p>
+<p>因此，时间复杂度为<strong>O(n^2)</strong>.</p>
+<p>以下是简单实现:</p>
+<div class="highlight"><pre><code class="java"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> bubbleSort(<span class="keyword">int</span>[] a){
+    <span class="keyword">int</span> length = a.length;
+    <span class="keyword">int</span> temp = <span class="number">0</span>;
+    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;length;i++){
+        <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;length-i;j++){<span class="comment">//每次要从第一个数开始比较，因为从后往前排的</span>
+            <span class="keyword">if</span>(a[j]&gt;a[j+<span class="number">1</span>]){
+                temp = a[j];
+                a[j] = a[j+<span class="number">1</span>];
+                a[j+<span class="number">1</span>] = temp;
+            }
+        }
+    }
+}</code></pre></div><h2 id="选择排序">选择排序</h2><p>选择排序就是遍历一边所有的数，把最小的数找出来放到第一个位置，一遍以后<strong>第一个数</strong>就是最小的数，如此往复，直到所有元素都排序。</p>
+<p>时间复杂度为共遍历(n-1)遍，共比较(n-1+……+3+2+1）次，复杂度为（n-1)*(1+2+3+……+n-1),影响最大的项是n^2(系数忽略)。</p>
+<p>因此，时间复杂度为<strong>O(n^2)</strong>.</p>
+<p>以下是简单实现:</p>
+<div class="highlight"><pre><code class="java"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> selectSort(<span class="keyword">int</span>[] a){
+    <span class="keyword">int</span> length = a.length;
+    <span class="keyword">int</span> min = <span class="number">0</span>;
+    <span class="keyword">int</span> pos = <span class="number">0</span>;
+
+    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;length-<span class="number">1</span>;i++){
+        min = a[i];
+        pos = i;
+        <span class="keyword">for</span>(<span class="keyword">int</span> j=i;j&lt;length;j++){<span class="comment">//每次都要比较到最后一个数，因为从前往后排的</span>
+            <span class="keyword">if</span>(a[j]&lt;min){
+                min = a[j];
+                pos = j;
+            }
+        }
+        <span class="keyword">if</span>(pos!=i){
+            a[pos] = a[i];
+            a[i] = min;
+        }
+    }
+}</code></pre></div><h2 id="插入排序">插入排序</h2><p>插入排序是这样的，假设第一个数是已排序的，后面的数依次跟前面已排序的数比较，直到找到它该有的位置（类似于玩扑克时候的摸牌）。</p>
+<p>时间复杂度是：　　
+第1次，取第二个数，与前面1个数比较　　
+第2次，取第三个数，与前面2个数比较　　
+……　　
+第n-1次，取第n个数，与前面n-1个数比较</p>
+<p>共需循环取数(n-1)次，共比较(1+2+3+……+n-1)次。复杂度为（n-1)*(1+2+3+……+n-1),影响最大的项是n^2(系数忽略)。</p>
+<p>因此，时间复杂度为<strong>O(n^2)</strong>.</p>
+<p>以下是简单实现:</p>
+<div class="highlight"><pre><code class="java"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> insertSort(<span class="keyword">int</span>[] a){
+    <span class="keyword">int</span> length = a.length;
+    <span class="keyword">int</span> temp = <span class="number">0</span>;
+    <span class="keyword">int</span> pos = <span class="number">0</span>;
+
+    <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">1</span>;i&lt;length;i++){
+        temp = a[i];
+        pos = i;
+        <span class="keyword">for</span>(<span class="keyword">int</span> j=i-<span class="number">1</span>;j&gt;=<span class="number">0</span>;j--){
+            <span class="keyword">if</span>(a[j]&gt;temp){
+                a[j+<span class="number">1</span>] = a[j];
+                pos = j;
+            }
+        }
+
+        <span class="keyword">if</span>(pos!=i){
+            a[pos] = temp;
+        }
+    }
+}</code></pre></div><h2 id="快速排序">快速排序</h2><p>简单的说，快速排序就是选一个基数，小于它的数排在它左边，大于它的数排在它右边，这样一遍下来以后，如果以该数的位置做一条竖线，可以划分为左右两部分。左右两边又可以依照刚才的方法分别处理。  </p>
+<p>这其实体现了一种分治的思想。因此可以用到递归。</p>
+<p><img src="http://photo.hanyu.iciba.com/upload/encyclopedia_2/5e/e2/bk_5ee213ee925122f6aef374cf940c4f95_3Cw3Ah.jpg" alt="快速排序"></p>
+<p>时间复杂度，快速排序算法的时间复杂度依赖于给定的数据，试想一下，如果给定的数据已经是有序的，那么该种情况下二分的意义已经不是很大，n个数几乎分了n次，时间复杂度为<strong>O(n^2)</strong>，这是最糟糕的情况。</p>
+<p>但是对于一般的情况，我们认为二分总是有效的。因此，快速排序算法的平均时间复杂度为<strong>O(n lg n)</strong>。</p>
+<p>以下是简单实现:</p>
+<div class="highlight"><pre><code class="java"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> quickSort(<span class="keyword">int</span>[] a,<span class="keyword">int</span> left,<span class="keyword">int</span> right){
+    <span class="keyword">if</span>(left &gt;= right)
+        <span class="keyword">return</span>;
+
+    <span class="keyword">int</span> low = left;
+    <span class="keyword">int</span> high = right;
+    <span class="keyword">boolean</span> fromRight = <span class="keyword">true</span>;<span class="comment">//先从右边遍历,因为基数选择了左边第一个，确保那个基数原先的位置可以“动”起来</span>
+    <span class="keyword">int</span> base = a[left];
+
+    <span class="keyword">while</span>(low&lt;high){
+        <span class="keyword">if</span>(fromRight){
+            <span class="keyword">if</span>(a[high]&lt;base){
+                a[low] = a[high];
+                low++;<span class="comment">//此处++是为了从左边处理的时候可以少一次++操作，注释掉代码依旧可行</span>
+                fromRight = <span class="keyword">false</span>;
+            }<span class="keyword">else</span>{
+                high--;
+            }
+        }<span class="keyword">else</span>{
+            <span class="keyword">if</span>(a[low]&gt;base){
+                a[high] = a[low];
+                high--;<span class="comment">//此处--是为了从右边处理的时候可以少一次--操作，注释掉代码依旧可行</span>
+                fromRight = <span class="keyword">true</span>;
+            }<span class="keyword">else</span>{
+                low++;
+            }
+        }
+    }
+
+    a[low] = base;<span class="comment">//此时 low==high</span>
+    quickSort(a,left,low-<span class="number">1</span>);
+    quickSort(a,low+<span class="number">1</span>,right);
+}</code></pre></div><p>以上就是几个简单的排序算法分析，下次如果有机会再分析几种。</p>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/java">java</a></li>
+    </ul>
+</div>
+<div class="date">2015-04-19</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+</body>
+</html>

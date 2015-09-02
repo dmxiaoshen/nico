@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>ECharts图表入门级使用</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">ECharts图表入门级使用</h2>
+<article>
+    <h2 id="简介">简介</h2><blockquote>
+<p>ECharts开源来自百度商业前端数据可视化团队，基于html5 Canvas，是一个纯Javascript图表库，提供直观，生动，可交互，可个性化定制的数据可视化图表。创新的拖拽重计算、数据视图、值域漫游等特性大大增强了用户体验，赋予了用户对数据进行挖掘、整合的能力。</p>
+</blockquote>
+<p><!--more--></p>
+<h2 id="准备">准备</h2><p>首先去<a href="http://echarts.baidu.com/doc/example.html">ECharts</a>官网下载文件(右上角的下载按钮),下载完后解压，进入到<strong>doc\example\www</strong>目录，<br>会看到有有一个名叫js的文件夹，没错就是这里，在这里新建一个html文件，如test.html,内容如下:  </p>
+<div class="highlight"><pre><code class="javascript">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;
+<span class="xml"><span class="tag">&lt;<span class="title">head</span>&gt;</span>
+<span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"Content-Type"</span> <span class="attribute">content</span>=<span class="value">"text/html; charset=utf-8"</span> /&gt;</span>
+<span class="tag">&lt;<span class="title">title</span>&gt;</span>ECharts示例<span class="tag">&lt;/<span class="title">title</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span> <span class="attribute">src</span>=<span class="value">"js/echarts.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"main"</span> <span class="attribute">style</span>=<span class="value">"height:600px;width:600px"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript">
+
+require.config({
+    paths:{
+        echarts: <span class="string">"js"</span><span class="comment">//当前目录的js目录，里面有echarts.js和chart文件夹</span>
+    }
+});
+
+require([<span class="string">'echarts'</span>,<span class="string">'echarts/chart/pie'</span>],callBackDraw);<span class="comment">//用到什么加什么，这里只用了饼图pie</span>
+
+<span class="function"><span class="keyword">function</span> <span class="title">callBackDraw</span><span class="params">(ec)</span>{</span>
+    <span class="keyword">var</span> myChart = ec.init(document.getElementById(<span class="string">"main"</span>));
+
+    <span class="keyword">var</span> option = { title : {
+                   text: <span class="string">'某站点用户访问来源'</span>,
+                   subtext: <span class="string">'纯属虚构'</span>,
+                   x:<span class="string">'center'</span>
+               },
+               tooltip : {
+                   trigger: <span class="string">'item'</span>,
+                   formatter: <span class="string">"{a} &lt;br/&gt;{b} : {c} ({d}%)"</span>
+               },
+               legend: {
+                   orient : <span class="string">'vertical'</span>,
+                   x : <span class="string">'left'</span>,
+                   data:[<span class="string">'直接访问'</span>,<span class="string">'邮件营销'</span>,<span class="string">'联盟广告'</span>,<span class="string">'视频广告'</span>,<span class="string">'搜索引擎'</span>]
+               },
+               toolbox: {
+                   show : <span class="literal">true</span>,
+                   feature : {
+                       mark : {show: <span class="literal">true</span>},
+                       dataView : {show: <span class="literal">true</span>, readOnly: <span class="literal">false</span>},
+                       magicType : {
+                           show: <span class="literal">true</span>, 
+                           type: [<span class="string">'pie'</span>, <span class="string">'funnel'</span>],
+                           option: {
+                               funnel: {
+                                   x: <span class="string">'25%'</span>,
+                                   width: <span class="string">'50%'</span>,
+                                   funnelAlign: <span class="string">'left'</span>,
+                                   max: <span class="number">1548</span>
+                               }
+                           }
+                       },
+                       restore : {show: <span class="literal">true</span>},
+                       saveAsImage : {show: <span class="literal">true</span>}
+                   }
+               },
+               calculable : <span class="literal">true</span>,
+               series : [
+                   {
+                       name:<span class="string">'访问来源'</span>,
+                       type:<span class="string">'pie'</span>,
+                       radius : <span class="string">'55%'</span>,
+                       center: [<span class="string">'50%'</span>, <span class="string">'60%'</span>],
+                       data: [
+                           {value:<span class="number">335</span>, name:<span class="string">'直接访问'</span>},
+                           {value:<span class="number">310</span>, name:<span class="string">'邮件营销'</span>},
+                           {value:<span class="number">234</span>, name:<span class="string">'联盟广告'</span>},
+                           {value:<span class="number">135</span>, name:<span class="string">'视频广告'</span>},
+                           {value:<span class="number">1548</span>, name:<span class="string">'搜索引擎'</span>}
+                       ]  
+                   }
+               ]
+           };
+
+    myChart.setOption(option);
+}
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></span></code></pre></div><p>这里涉及到require，可能会比较麻烦，还有更简单的，<strong>另一种用法</strong>  </p>
+<p>进入到<strong>doc\example\www2</strong>目录，新建一个test.html文件，内容如下:  </p>
+<div class="highlight"><pre><code class="javascript">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;
+<span class="xml"><span class="tag">&lt;<span class="title">head</span>&gt;</span>
+<span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"Content-Type"</span> <span class="attribute">content</span>=<span class="value">"text/html; charset=utf-8"</span> /&gt;</span>
+<span class="tag">&lt;<span class="title">title</span>&gt;</span>ECharts示例<span class="tag">&lt;/<span class="title">title</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span> <span class="attribute">src</span>=<span class="value">"js/echarts-all.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+<span class="tag">&lt;<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"main"</span> <span class="attribute">style</span>=<span class="value">"height:600px;width:600px"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript">
+    <span class="keyword">var</span> myChart = echarts.init(document.getElementById(<span class="string">"main"</span>));
+
+    <span class="keyword">var</span> option = { title : {
+                   text: <span class="string">'某站点用户访问来源'</span>,
+                   subtext: <span class="string">'纯属虚构'</span>,
+                   x:<span class="string">'center'</span>
+               },
+               tooltip : {
+                   trigger: <span class="string">'item'</span>,
+                   formatter: <span class="string">"{a} &lt;br/&gt;{b} : {c} ({d}%)"</span>
+               },
+               legend: {
+                   orient : <span class="string">'vertical'</span>,
+                   x : <span class="string">'left'</span>,
+                   data:[<span class="string">'直接访问'</span>,<span class="string">'邮件营销'</span>,<span class="string">'联盟广告'</span>,<span class="string">'视频广告'</span>,<span class="string">'搜索引擎'</span>]
+               },
+               toolbox: {
+                   show : <span class="literal">true</span>,
+                   feature : {
+                       mark : {show: <span class="literal">true</span>},
+                       dataView : {show: <span class="literal">true</span>, readOnly: <span class="literal">false</span>},
+                       magicType : {
+                           show: <span class="literal">true</span>, 
+                           type: [<span class="string">'pie'</span>, <span class="string">'funnel'</span>],
+                           option: {
+                               funnel: {
+                                   x: <span class="string">'25%'</span>,
+                                   width: <span class="string">'50%'</span>,
+                                   funnelAlign: <span class="string">'left'</span>,
+                                   max: <span class="number">1548</span>
+                               }
+                           }
+                       },
+                       restore : {show: <span class="literal">true</span>},
+                       saveAsImage : {show: <span class="literal">true</span>}
+                   }
+               },
+               calculable : <span class="literal">true</span>,
+               series : [
+                   {
+                       name:<span class="string">'访问来源'</span>,
+                       type:<span class="string">'pie'</span>,
+                       radius : <span class="string">'55%'</span>,
+                       center: [<span class="string">'50%'</span>, <span class="string">'60%'</span>],
+                       data: [
+                           {value:<span class="number">335</span>, name:<span class="string">'直接访问'</span>},
+                           {value:<span class="number">310</span>, name:<span class="string">'邮件营销'</span>},
+                           {value:<span class="number">234</span>, name:<span class="string">'联盟广告'</span>},
+                           {value:<span class="number">135</span>, name:<span class="string">'视频广告'</span>},
+                           {value:<span class="number">1548</span>, name:<span class="string">'搜索引擎'</span>}
+                       ]  
+                   }
+               ]
+           };
+
+    myChart.setOption(option);
+
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></span></code></pre></div><p>会看到和第一种方法一样的饼图，具体用哪种，可根据需求选择。  </p>
+<p>简单的介绍就到这里，权且当做抛砖引玉。</p>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/ECharts">ECharts</a></li>
+    </ul>
+</div>
+<div class="date">2014-12-15</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+</body>
+</html>

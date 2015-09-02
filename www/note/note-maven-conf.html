@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>maven简单配置</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">maven简单配置</h2>
+<article>
+    <h2 id="配置本地仓库">配置本地仓库</h2><p>打开<strong>maven安装目录</strong>，编辑<strong>conf/settings.xml</strong>文件，加入<code>&lt;localRepository&gt;F:\repository&lt;/localRepository&gt;</code><br>其中<strong>F:\repository</strong>就是需要配置的本地仓库地址。<br><strong>注意:</strong>这个是全局的配置文件，如想为每个用户单独配置，请在每个仓库单独配置，简单来讲，按如上举例，  </p>
+<ol>
+<li>先在F盘建立repository文件夹。  </li>
+<li>把maven安装目录/conf/settings.xml文件复制一份到第一步建立的文件夹下。  </li>
+<li>修改F:/repository/settings.xml,加入<code>&lt;localRepository&gt;F:\repository&lt;/localRepository&gt;</code>。</li>
+</ol>
+<p><!--more--></p>
+<h2 id="远程仓库">远程仓库</h2><p>maven的默认中央仓库：  </p>
+<div class="highlight"><pre><code class="xml"> <span class="tag">&lt;<span class="title">repositories</span>&gt;</span>  
+  <span class="tag">&lt;<span class="title">repository</span>&gt;</span>  
+    <span class="tag">&lt;<span class="title">id</span>&gt;</span> central<span class="tag">&lt;/<span class="title">id</span>&gt;</span>  
+    <span class="tag">&lt;<span class="title">name</span>&gt;</span> Maven Repository Switchboard<span class="tag">&lt;/<span class="title">name</span>&gt;</span>  
+    <span class="tag">&lt;<span class="title">layout</span>&gt;</span> default<span class="tag">&lt;/<span class="title">layout</span>&gt;</span>  
+    <span class="tag">&lt;<span class="title">url</span>&gt;</span>http://repo1.maven.org/maven2<span class="tag">&lt;/<span class="title">url</span>&gt;</span>  
+    <span class="tag">&lt;<span class="title">snapshots</span>&gt;</span>  
+      <span class="tag">&lt;<span class="title">enabled</span>&gt;</span> false<span class="tag">&lt;/<span class="title">enabled</span>&gt;</span>  
+    <span class="tag">&lt;/<span class="title">snapshots</span>&gt;</span>  
+  <span class="tag">&lt;/<span class="title">repository</span>&gt;</span>  
+ <span class="tag">&lt;/<span class="title">repositories</span>&gt;</span></code></pre></div><p>如果觉得默认中央仓库很慢，想配置其他远程仓库，比如<a href="http://maven.oschina.net/help.html" title="开源中国maven帮助">开源中国的maven库</a>。<br>修改<strong>setting.xml</strong>文件:</p>
+<div class="highlight"><pre><code class="xml"> <span class="tag">&lt;<span class="title">mirrors</span>&gt;</span>
+  <span class="comment">&lt;!-- mirror | Specifies a repository mirror site to use instead of a given
+  repository. The repository that | this mirror serves has an ID that matches
+  the mirrorOf element of this mirror. IDs are used | for inheritance and direct
+  lookup purposes, and must be unique across the set of mirrors. | --&gt;</span>
+  <span class="tag">&lt;<span class="title">mirror</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">id</span>&gt;</span>nexus-osc<span class="tag">&lt;/<span class="title">id</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">mirrorOf</span>&gt;</span>*<span class="tag">&lt;/<span class="title">mirrorOf</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">name</span>&gt;</span>Nexus osc<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">url</span>&gt;</span>http://maven.oschina.net/content/groups/public/<span class="tag">&lt;/<span class="title">url</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">mirror</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">mirrors</span>&gt;</span></code></pre></div><p><strong>补充：</strong>如果还需要osc的thirdparty仓库或多个仓库，需要如下修改:</p>
+<div class="highlight"><pre><code class="xml"> <span class="tag">&lt;<span class="title">mirrors</span>&gt;</span>
+  <span class="comment">&lt;!-- mirror | Specifies a repository mirror site to use instead of a given
+   repository. The repository that | this mirror serves has an ID that matches
+   the mirrorOf element of this mirror. IDs are used | for inheritance and direct
+   lookup purposes, and must be unique across the set of mirrors. | --&gt;</span>
+   <span class="tag">&lt;<span class="title">mirror</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">id</span>&gt;</span>nexus-osc<span class="tag">&lt;/<span class="title">id</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">mirrorOf</span>&gt;</span>central<span class="tag">&lt;/<span class="title">mirrorOf</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">name</span>&gt;</span>Nexus osc<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">url</span>&gt;</span>http://maven.oschina.net/content/groups/public/<span class="tag">&lt;/<span class="title">url</span>&gt;</span>
+   <span class="tag">&lt;/<span class="title">mirror</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">mirror</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">id</span>&gt;</span>nexus-osc-thirdparty<span class="tag">&lt;/<span class="title">id</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">mirrorOf</span>&gt;</span>thirdparty<span class="tag">&lt;/<span class="title">mirrorOf</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">name</span>&gt;</span>Nexus osc thirdparty<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">url</span>&gt;</span>http://maven.oschina.net/content/repositories/thirdparty/<span class="tag">&lt;/<span class="title">url</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">mirror</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">mirrors</span>&gt;</span></code></pre></div><p>这里是配置 Maven 的 mirror 地址指向OSChina 的 Maven 镜像地址。 在执行 Maven 命令的时候， Maven 还需要安装一些插件包，这些插件包的下载地址也让其指向 OSChina 的 Maven 地址。修改如下内容。 </p>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">profile</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">id</span>&gt;</span>jdk-1.4<span class="tag">&lt;/<span class="title">id</span>&gt;</span>
+
+    <span class="tag">&lt;<span class="title">activation</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">jdk</span>&gt;</span>1.4<span class="tag">&lt;/<span class="title">jdk</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">activation</span>&gt;</span>
+
+    <span class="tag">&lt;<span class="title">repositories</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">repository</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">id</span>&gt;</span>nexus<span class="tag">&lt;/<span class="title">id</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">name</span>&gt;</span>local private nexus<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">url</span>&gt;</span>http://maven.oschina.net/content/groups/public/<span class="tag">&lt;/<span class="title">url</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">releases</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="title">enabled</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">releases</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">snapshots</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="title">enabled</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">snapshots</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">repository</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">repositories</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">pluginRepositories</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">pluginRepository</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">id</span>&gt;</span>nexus<span class="tag">&lt;/<span class="title">id</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">name</span>&gt;</span>local private nexus<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">url</span>&gt;</span>http://maven.oschina.net/content/groups/public/<span class="tag">&lt;/<span class="title">url</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">releases</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="title">enabled</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">releases</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">snapshots</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="title">enabled</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">snapshots</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">pluginRepository</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">pluginRepositories</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">profile</span>&gt;</span></code></pre></div><p>当然也可以给每个项目单独配置仓库，需在项目的pom.xml文件中配置，如：  </p>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">project</span>&gt;</span>
+  ...
+  <span class="tag">&lt;<span class="title">repositories</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">repository</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="title">id</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">name</span>&gt;</span>JBoss Repository<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">url</span>&gt;</span>http://repository.jboss.com/maven2/<span class="tag">&lt;/<span class="title">url</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">releases</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="title">enabled</span>&gt;</span>
+      <span class="tag">&lt;/<span class="title">releases</span>&gt;</span>   
+     <span class="tag">&lt;<span class="title">snapshots</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="title">enabled</span>&gt;</span>
+     <span class="tag">&lt;/<span class="title">snapshots</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="title">layout</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">repository</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">repositories</span>&gt;</span>
+  ...
+<span class="tag">&lt;/<span class="title">project</span>&gt;</span></code></pre></div><h2 id="私服nexus">私服Nexus</h2><blockquote>
+<p>Nexus是一个Maven仓库管理器，用来搭建私有仓库服务器。建立公司/组织的私有仓库的的好处是便于管理，节省公网带宽，利用内网下载依赖项速度快，还有一个非常有用的功能就是能有效管理内部项目的SNAPSHOT版本，实现各个模块间的共享. </p>
+</blockquote>
+<p>还没有玩过，以后补充。</p>
+<p>参考网址:  </p>
+<ul>
+<li><a href="http://maven.oschina.net/help.html">http://maven.oschina.net/help.html</a></li>
+<li><a href="http://my.oschina.net/aiguozhe/blog/101537">http://my.oschina.net/aiguozhe/blog/101537</a></li>
+</ul>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/maven">maven</a></li>
+            <li><a href="/tag/配置">配置</a></li>
+    </ul>
+</div>
+<div class="date">2014-11-18</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+</body>
+</html>

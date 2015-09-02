@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>Hexo博客简单搭建</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">Hexo博客简单搭建</h2>
+<article>
+    <h2 id="简介">简介</h2><blockquote>
+<p>Hexo 是一款基于node 的静态博客网站生成器<br>作者 : tommy351是一个台湾的在校大学生<br>相比其他的静态网页生成器而言有着，生成静态网页最快，插件丰富（已经移植了Octopress 插件）。<br>关于如何建立一个Hello World级别的Hexo，官方github主页有英文文档。<br><a href="https://github.com/tommy351/hexo">https://github.com/tommy351/hexo</a></p>
+</blockquote>
+<h2 id="说明">说明</h2><p>博客<a href="http://dmxiaoshen.github.io/">http://dmxiaoshen.github.io/</a>就是根据Hexo生成的，这里简单记录下如何安装及配置，<strong>本教程基于windows系统</strong>。  </p>
+<h2 id="安装">安装</h2><h3 id="1-安装git">1. 安装git</h3><p>下载<a href="http://msysgit.github.io/">msysgit</a>并安装，非常简单。</p>
+<h3 id="2-安装node-js">2. 安装Node.js</h3><p>下载<a href="http://www.nodejs.org/">Node.js</a>(windows版本),根据提示安装即可，非常简单。  </p>
+<h3 id="3-安装hexo">3. 安装Hexo</h3><p>启动Git Bash(其实有更快的方法，任意位置右击鼠标，选择Git Bash)，执行命令:  </p>
+<div class="highlight"><pre><code class="bash">npm install -g hexo</code></pre></div><h2 id="生成及本地搭建">生成及本地搭建</h2><p>安装完成以后，你可以在你喜欢的目录建立hexo文件夹（文件夹名字可任取，这里用hexo）。<br>选中该文件夹，<strong>右键-&gt;Git Bash Here</strong>,进入命令窗口，执行:  </p>
+<div class="highlight"><pre><code class="bash">hexo init</code></pre></div><p>接着执行:  </p>
+<div class="highlight"><pre><code class="bash">npm install</code></pre></div><p>用以安装各种依赖的包。  </p>
+<p>到此，本地的Hexo博客已经搭建起来了。如想看效果，执行:  </p>
+<div class="highlight"><pre><code class="bash">hexo generate  
+hexo server</code></pre></div><p>浏览器输入<strong>localhost:4000</strong>就可以访问本地博客了。<br>其实，以上命令可以简化为:  </p>
+<div class="highlight"><pre><code class="bash">hexo g
+hexo s</code></pre></div><h2 id="部署到github">部署到github</h2><p>上面的步骤只是在本地生成了博客，但是别人不能访问到，这里主要讲如何把博客部署到github上，这样，<br>别人就可以通过链接访问博客了，说的通俗点就是博客放到外网上了。  </p>
+<p><strong>首先需要一个github账号</strong>,如果没有，请自行注册<a href="https://github.com/">github</a>,如果已有账号，请接着往下看。  </p>
+<p><strong>强调一下，这里要牢记你的github账号，下面有依赖，举个例子，比如账号是dmxiaoshen</strong>  </p>
+<h3 id="1-创建repository">1. 创建repository</h3><p>登录github，在自己的主页右下角，新建一个repository。这时，注意根据上面的账号，我们创建repository的名字是<br><strong>dmxiaoshen.github.io</strong>,(这里dmxiaoshen其实就是账号名，必须一致)。  </p>
+<h3 id="2-部署">2. 部署</h3><p>回到本地，进入刚才建立的hexo文件夹，会看到<strong>_config.yml</strong>文件，编辑它，修改以下的地方:  </p>
+<div class="highlight"><pre><code class="xml">deploy:
+  type: github
+  repository: https://github.com/dmxiaoshen/dmxiaoshen.github.io.git
+  branch: master</code></pre></div><p><strong>把这里的dmxiaoshen都改换成你的账号名。</strong>  </p>
+<p>最好先执行下:  </p>
+<div class="highlight"><pre><code class="bash"> $ git config --global user.name <span class="string">"yourgithubrname"</span>  
+ $ git config --global user.email <span class="string">"yourgithubemail"</span></code></pre></div><p>做下全局配置。</p>
+<p>接着执行以下命令，即可完成部署:  </p>
+<div class="highlight"><pre><code class="bash">hexo generate
+hexo deploy</code></pre></div><p>在执行<strong>hexo deploy</strong>过程中，会让你输入github的账号和密码，输入即可，账号输入会有显示，密码输入不显示但是不要紧，输入就行，回车确定。</p>
+<p>到此，部署完成。浏览器访问<strong>dmxiaoshen.github.io</strong>(dmxiaoshen换成你的账号)就可以访问了.  </p>
+<h2 id="补充">补充</h2><p>npm install 下载那里如果很慢，可以设置国内镜像，比如淘宝<strong>npm config set registry <a href="https://registry.npm.taobao.org">https://registry.npm.taobao.org</a></strong></p>
+<p>在Hexo 3.0版本后deploy git 被分开的，所以需要安装，安装命令如下<strong>npm install hexo-deployer-git --save</strong>
+安装好后在尝试一下就ok。此时需要修改<strong>_config.yml</strong>文件为</p>
+<div class="highlight"><pre><code class="xml">deploy:
+  type: git
+  repository: https://github.com/dmxiaoshen/dmxiaoshen.github.io.git
+  branch: master</code></pre></div><p>用到<strong>git clone</strong>时可能需要添加ssh key，命令为<strong>ssh-keygen -t rsa -C &quot;youremail@youreamil.com&quot;</strong>.</p>
+<p><strong>PS</strong>:每次使用命令都要在该hexo文件夹下。每次新增或修改日志，都需先执行hexo generate才能保存。</p>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/hexo">hexo</a></li>
+            <li><a href="/tag/博客">博客</a></li>
+    </ul>
+</div>
+<div class="date">2014-11-25</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+</body>
+</html>

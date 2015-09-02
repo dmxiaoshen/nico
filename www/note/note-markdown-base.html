@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>markdown语法总结</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">markdown语法总结</h2>
+<article>
+    <h2 id="标题"><span id="jump">标题</span></h2><div class="highlight"><pre><code class="java">h1 # 标题 也可以是文字下面加=======  
+h2 ## 二级标题 也可以是文字下面加-------（如果上面是空行则变分割线）  
+h3 ### 三级标题  
+h4 #### 四级标题  
+h5 ##### 五级标题  
+h6 ###### 六级标题</code></pre></div><h2 id="换行与缩进">换行与缩进</h2><p>尾部加两个空格再换行就是另起一行<br>首行缩进要中输入法全角空格  </p>
+<h2 id="粗体和斜体">粗体和斜体</h2><div class="highlight"><pre><code class="java">**粗体** 或者 __粗体__  
+*斜体* 或者 _斜体_</code></pre></div><p><!--more--></p>
+<h2 id="引用、行内代码、嵌套、代码块">引用、行内代码、嵌套、代码块</h2><table>
+<thead>
+<tr>
+<th>语法</th>
+<th>作用</th>
+<th>内部标识是否有效  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>> 引用</td>
+<td>引用内容</td>
+<td>Y  </td>
+</tr>
+<tr>
+<td>`行内代码`</td>
+<td>在行中显示代码</td>
+<td>N  </td>
+</tr>
+<tr>
+<td>``嵌套``</td>
+<td>嵌套显示</td>
+<td>N  </td>
+</tr>
+<tr>
+<td>```代码块```</td>
+<td>代码块显示</td>
+<td>N  </td>
+</tr>
+</tbody>
+</table>
+<h2 id="列表">列表</h2><ul>
+<li><p>有序列表  </p>
+<div class="highlight"><pre><code class="java"><span class="number">1.</span> 列表<span class="number">1</span>  
+<span class="number">2.</span> 列表<span class="number">2</span>  
+<span class="number">3.</span> 列表<span class="number">3</span></code></pre></div></li>
+<li><p>无序列表  </p>
+<div class="highlight"><pre><code class="java">*, +,- 都可以，如：  
+* 列表<span class="number">1</span>  
+* 列表<span class="number">2</span>  
+* 列表<span class="number">3</span></code></pre></div></li>
+</ul>
+<h2 id="链接和图片">链接和图片</h2><h3 id="直接链接">直接链接</h3><p><code>&lt;http://www.baidu.com/&gt;</code><br>效果  <a href="http://www.baidu.com/">http://www.baidu.com/</a></p>
+<h3 id="一般写法">一般写法</h3><p><code>[百度一下](http://www.baidu.com/ &quot;百度一下&quot;)</code><br>效果  <a href="http://www.baidu.com/" title="百度一下">百度一下</a>  </p>
+<h3 id="图片">图片</h3><p><code>![img](url &quot;title&quot;)</code><br>效果:<br><img src="http://ww2.sinaimg.cn/large/5e8cb366jw1e85r40u55hj20b40b4q2x.jpg" alt="img" title="markdown">  </p>
+<h3 id="链式引用">链式引用</h3><div class="highlight"><pre><code class="java"> 链接：  
+ [文字<span class="number">1</span>][<span class="number">1</span>],[文字<span class="number">2</span>][<span class="number">2</span>]  
+
+ [<span class="number">1</span>]: url <span class="string">"文字1"</span>  
+ [<span class="number">2</span>]: url <span class="string">"文字2"</span>  
+
+ 图片:  
+ ![img][<span class="number">1</span>],![img][<span class="number">2</span>]  
+
+ [<span class="number">1</span>]: url <span class="string">"title1"</span>  
+ [<span class="number">2</span>]: url <span class="string">"title2"</span></code></pre></div><p>效果：<br> <a href="https://github.com/" title="github">github</a>,<a href="http://www.oschina.net/" title="开源中国">开源中国</a><br> markdown:<br> <img src="http://ww2.sinaimg.cn/large/5e8cb366jw1e85r40u55hj20b40b4q2x.jpg" alt="img" title="markdown">  </p>
+<h2 id="其他">其他</h2><div class="highlight"><pre><code class="java"> [toc] 显示目录
+
+ 脚注：  
+ Hello[^hello]  
+
+ [^hello]: 这是一个脚注
+
+ 文内跳转:  
+ [点击跳转](#jump)  
+
+ &lt;span id=<span class="string">"jump"</span>&gt;跳转到这里&lt;/span&gt;</code></pre></div><p><a href="#jump">回到文首</a></p>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/markdown">markdown</a></li>
+    </ul>
+</div>
+<div class="date">2014-11-01</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+</body>
+</html>

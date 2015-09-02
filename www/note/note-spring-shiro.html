@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>spring与shiro整合实现权限控制</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">spring与shiro整合实现权限控制</h2>
+<article>
+    <h2 id="前言">前言</h2><p>如果你的项目需要权限管理，不妨试试Apache Shiro.  </p>
+<h3 id="什么是apache-shiro">什么是Apache Shiro?</h3><blockquote>
+<p>Apache Shiro(发音为“shee-roh”，日语“堡垒(Castle)”的意思)是一个强大易用的Java安全框架，提供了认证、授权、加密和会话管理功能，可为任何应用提供安全保障 - 从命令行应用、移动应用到大型网络及企业应用。Shiro为解决下列问题(我喜欢称它们为应用安全的四要素)提供了保护应用的API：</p>
+<ul>
+<li>认证 - 用户身份识别，常被称为用户“登录”；  </li>
+<li>授权 - 访问控制；  </li>
+<li>密码加密 - 保护或隐藏数据防止被偷窥；  </li>
+<li>会话管理 - 每用户相关的时间敏感的状态。</li>
+</ul>
+<p>Shiro还支持一些辅助特性，如Web应用安全、单元测试和多线程，它们的存在强化了上面提到的四个要素。
+核心概念：Subject，SecurityManager和Realms</p>
+</blockquote>
+<p><!--more--></p>
+<h2 id="shiro的jar包">shiro的jar包</h2><p>如果你的项目是maven管理的，需要配置如下:  </p>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">properties</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">shiro.version</span>&gt;</span>1.2.1<span class="tag">&lt;/<span class="title">shiro.version</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">properties</span>&gt;</span>
+<span class="tag">&lt;<span class="title">dependency</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.shiro<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>shiro-web<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">version</span>&gt;</span>${shiro.version}<span class="tag">&lt;/<span class="title">version</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">dependency</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.shiro<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>shiro-ehcache<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">version</span>&gt;</span>${shiro.version}<span class="tag">&lt;/<span class="title">version</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">dependency</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.shiro<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>shiro-spring<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">version</span>&gt;</span>${shiro.version}<span class="tag">&lt;/<span class="title">version</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></code></pre></div><h2 id="web-xml">web.xml</h2><p>配置shiro的过滤器:  </p>
+<div class="highlight"><pre><code class="xml"><span class="comment">&lt;!-- shiro 过滤器 --&gt;</span>
+<span class="tag">&lt;<span class="title">filter</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">filter-name</span>&gt;</span>shiroFilter<span class="tag">&lt;/<span class="title">filter-name</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">filter-class</span>&gt;</span>org.springframework.web.filter.DelegatingFilterProxy<span class="tag">&lt;/<span class="title">filter-class</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">init-param</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">param-name</span>&gt;</span>targetFilterLifecycle<span class="tag">&lt;/<span class="title">param-name</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">param-value</span>&gt;</span>true<span class="tag">&lt;/<span class="title">param-value</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">init-param</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">filter</span>&gt;</span>
+<span class="tag">&lt;<span class="title">filter-mapping</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">filter-name</span>&gt;</span>shiroFilter<span class="tag">&lt;/<span class="title">filter-name</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="title">url-pattern</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">filter-mapping</span>&gt;</span></code></pre></div><h2 id="spring-shiro-xml">spring-shiro.xml</h2><p>shiro的主配置文件:  </p>
+<div class="highlight"><pre><code class="xml"><span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="tag">&lt;<span class="title">beans</span> <span class="attribute">xmlns:xsi</span>=<span class="value">"http://www.w3.org/2001/XMLSchema-instance"</span>
+    <span class="attribute">xmlns</span>=<span class="value">"http://www.springframework.org/schema/beans"</span> <span class="attribute">xmlns:context</span>=<span class="value">"http://www.springframework.org/schema/context"</span>
+    <span class="attribute">xmlns:mvc</span>=<span class="value">"http://www.springframework.org/schema/mvc"</span> <span class="attribute">xmlns:aop</span>=<span class="value">"http://www.springframework.org/schema/aop"</span>
+    <span class="attribute">xmlns:tx</span>=<span class="value">"http://www.springframework.org/schema/tx"</span>
+    <span class="attribute">xsi:schemaLocation</span>=<span class="value">" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd http://www.springframework.org/schema/mvc
+                        http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop-3.1.xsd http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd "</span>&gt;</span>
+
+    <span class="tag">&lt;<span class="title">description</span>&gt;</span>Shiro Configuration<span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+
+    <span class="comment">&lt;!-- Shiro's main business-tier object for web-enabled applications --&gt;</span>
+    <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"securityManager"</span> <span class="attribute">class</span>=<span class="value">"org.apache.shiro.web.mgt.DefaultWebSecurityManager"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"realm"</span> <span class="attribute">ref</span>=<span class="value">"myRealm"</span> /&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"cacheManager"</span> <span class="attribute">ref</span>=<span class="value">"cacheManager"</span> /&gt;</span>
+    <span class="tag">&lt;/<span class="title">bean</span>&gt;</span>
+
+    <span class="comment">&lt;!-- 用户授权信息Cache --&gt;</span>
+    <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"cacheManager"</span> <span class="attribute">class</span>=<span class="value">"org.apache.shiro.cache.ehcache.EhCacheManager"</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"cacheManagerConfigFile"</span> <span class="attribute">value</span>=<span class="value">"classpath:cache/ehcache-shiro-local.xml"</span> 
+            /&gt;</span> 
+    <span class="tag">&lt;/<span class="title">bean</span>&gt;</span>
+
+    <span class="comment">&lt;!-- 项目自定义的Realm --&gt;</span>
+    <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"myRealm"</span> <span class="attribute">class</span>=<span class="value">"com.hsg.plms.shiro.entity.MyRealm"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"credentialsMatcher"</span> <span class="attribute">ref</span>=<span class="value">"passwordMatcher"</span> /&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"cacheManager"</span> <span class="attribute">ref</span>=<span class="value">"cacheManager"</span> /&gt;</span>
+    <span class="tag">&lt;/<span class="title">bean</span>&gt;</span>
+
+    <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"passwordMatcher"</span>
+        <span class="attribute">class</span>=<span class="value">"org.apache.shiro.authc.credential.HashedCredentialsMatcher"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"hashAlgorithmName"</span> <span class="attribute">value</span>=<span class="value">"SHA-256"</span> /&gt;</span><span class="comment">&lt;!-- MD5 
+            SHA-256 SHA-1 --&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"storedCredentialsHexEncoded"</span> <span class="attribute">value</span>=<span class="value">"false"</span> /&gt;</span>
+            <span class="comment">&lt;!-- 是否16,默认true,此处用base64 --&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"hashIterations"</span> <span class="attribute">value</span>=<span class="value">"1"</span>&gt;</span><span class="tag">&lt;/<span class="title">property</span>&gt;</span><span class="comment">&lt;!-- 迭代次数,默认1 --&gt;</span>
+    <span class="tag">&lt;/<span class="title">bean</span>&gt;</span>
+
+    <span class="comment">&lt;!-- Shiro Filter --&gt;</span>
+    <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"shiroFilter"</span> <span class="attribute">class</span>=<span class="value">"org.apache.shiro.spring.web.ShiroFilterFactoryBean"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"securityManager"</span> <span class="attribute">ref</span>=<span class="value">"securityManager"</span> /&gt;</span>
+         <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"loginUrl"</span> <span class="attribute">value</span>=<span class="value">"/login/index"</span> /&gt;</span> 
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"successUrl"</span> <span class="attribute">value</span>=<span class="value">"/"</span> /&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"unauthorizedUrl"</span> <span class="attribute">value</span>=<span class="value">"/login/index"</span> /&gt;</span>
+         <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"filters"</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">map</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">entry</span> <span class="attribute">key</span>=<span class="value">"my_authc"</span>&gt;</span>
+                    <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">class</span>=<span class="value">"com.hsg.plms.shiro.filter.MyAuthenticatingFilter"</span> /&gt;</span>
+                <span class="tag">&lt;/<span class="title">entry</span>&gt;</span>
+            <span class="tag">&lt;/<span class="title">map</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"filterChainDefinitions"</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">value</span>&gt;</span>            
+                /login/logout = logout
+                /static/** = anon    
+                /login/getCaptcha = anon
+                /login/checkCaptcha = anon                            
+                /** = my_authc
+            <span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">bean</span>&gt;</span>
+
+    <span class="comment">&lt;!-- 保证实现了Shiro内部lifecycle函数的bean执行 --&gt;</span>
+    <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"lifecycleBeanPostProcessor"</span> <span class="attribute">class</span>=<span class="value">"org.apache.shiro.spring.LifecycleBeanPostProcessor"</span> /&gt;</span>
+
+<span class="tag">&lt;/<span class="title">beans</span>&gt;</span></code></pre></div><h3 id="自定义的realm">自定义的Realm</h3><div class="highlight"><pre><code class="java"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRealm</span> <span class="keyword">extends</span> <span class="title">AuthorizingRealm</span></span>{
+
+    <span class="annotation">@Autowired</span>
+    <span class="keyword">private</span> UserService userService;
+
+    <span class="javadoc">/** 授权回调*/</span>
+    <span class="annotation">@Override</span>
+    <span class="keyword">protected</span> AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        <span class="comment">//ShiroUser u = (ShiroUser)principals.getPrimaryPrincipal();</span>
+        <span class="comment">//String currentUsername = (String)super.getAvailablePrincipal(principals);</span>
+        ShiroUser shiroUser = (ShiroUser) principals.fromRealm(getName()).iterator().next(); <span class="comment">// 只有一个桥梁</span>
+        User user = userService.findUserByName(shiroUser.getUsername());
+        <span class="keyword">if</span> (user != <span class="keyword">null</span>) {
+            SimpleAuthorizationInfo info = <span class="keyword">new</span> SimpleAuthorizationInfo();           
+            info.addObjectPermission(<span class="keyword">new</span> AllPermission());          
+            <span class="keyword">return</span> info;
+        }
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+    }
+
+    <span class="javadoc">/** 登录回调*/</span>
+    <span class="annotation">@Override</span>
+    <span class="keyword">protected</span> AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) <span class="keyword">throws</span> AuthenticationException {
+        String name = token.getPrincipal().toString();
+        User user = userService.findUserByName(name);
+        <span class="keyword">if</span>(user!=<span class="keyword">null</span>){
+            Object principal = getPrincipal(user);
+            SimpleAuthenticationInfo info = <span class="keyword">new</span> SimpleAuthenticationInfo(principal, user.getPassword(),<span class="keyword">new</span> SimpleByteSource(user.getUsername()), getName());
+            <span class="keyword">return</span> info;
+        }
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+    }
+
+    <span class="keyword">private</span> Object getPrincipal(User user){
+        ShiroUser principal = <span class="keyword">new</span> ShiroUser();
+        principal.setUserId(user.getId());
+        principal.setUsername(user.getUsername());
+        <span class="keyword">return</span> principal;
+    }
+
+}</code></pre></div><p><strong>ShiroUser</strong> </p>
+<div class="highlight"><pre><code class="java"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShiroUser</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>{
+
+    <span class="javadoc">/** */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">8167341999489366817</span>L;
+
+    <span class="keyword">private</span> Long userId;
+    <span class="keyword">private</span> String username;
+
+    <span class="keyword">public</span> Long getUserId() {
+        <span class="keyword">return</span> userId;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">void</span> setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    <span class="keyword">public</span> String getUsername() {
+        <span class="keyword">return</span> username;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">void</span> setUsername(String username) {
+        this.username = username;
+    }
+
+}</code></pre></div><h3 id="自定义的fliter">自定义的fliter</h3><div class="highlight"><pre><code class="java"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAuthenticatingFilter</span> <span class="keyword">extends</span> <span class="title">FormAuthenticationFilter</span></span>{
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">protected</span> <span class="keyword">void</span> setFailureAttribute(ServletRequest request, AuthenticationException ae) {
+    <span class="javadoc">/** 放入异常的完整信息，控制层controller需要用到*/</span>
+        request.setAttribute(getFailureKeyAttribute(), ae);
+    }
+
+}</code></pre></div><h2 id="spring-mvc-xml">spring-mvc.xml</h2><p>为了开启Shiro权限注解，需要加入:  </p>
+<div class="highlight"><pre><code class="xml"><span class="comment">&lt;!-- shiro相关  @RequiresRoles，@RequiresPermissions 等等使用--&gt;</span>
+<span class="tag">&lt;<span class="title">bean</span> <span class="attribute">class</span>=<span class="value">"org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"securityManager"</span> <span class="attribute">ref</span>=<span class="value">"securityManager"</span> /&gt;</span>    
+<span class="tag">&lt;/<span class="title">bean</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">bean</span> <span class="attribute">class</span>=<span class="value">"org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"</span> <span class="attribute">depends-on</span>=<span class="value">"lifecycleBeanPostProcessor"</span> /&gt;</span></code></pre></div><p>如：<code>@RequiresRoles</code> 以及 <code>@RequiresPermissions</code>.  </p>
+<h2 id="login-jsp">login.jsp</h2><div class="highlight"><pre><code class="javascript">&lt;form id=<span class="string">"form"</span> action=<span class="string">"login"</span> method=<span class="string">"post"</span>&gt;
+<span class="xml"><span class="tag">&lt;<span class="title">p</span>&gt;</span>
+<span class="tag">&lt;<span class="title">label</span>&gt;</span>用户名:<span class="tag">&lt;/<span class="title">label</span>&gt;</span><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"text"</span> <span class="attribute">name</span>=<span class="value">"username"</span> /&gt;</span>
+<span class="tag">&lt;/<span class="title">p</span>&gt;</span>
+<span class="tag">&lt;<span class="title">p</span>&gt;</span>
+<span class="tag">&lt;<span class="title">label</span>&gt;</span>密码:<span class="tag">&lt;/<span class="title">label</span>&gt;</span><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"password"</span> <span class="attribute">name</span>=<span class="value">"password"</span> /&gt;</span>
+<span class="tag">&lt;/<span class="title">p</span>&gt;</span>
+<span class="tag">&lt;<span class="title">p</span>&gt;</span><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"submit"</span> <span class="attribute">value</span>=<span class="value">"登录"</span> /&gt;</span><span class="tag">&lt;/<span class="title">p</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">form</span>&gt;</span></span></code></pre></div><h3 id="logincontroller">LoginController</h3><div class="highlight"><pre><code class="java"> <span class="keyword">public</span> String login(HttpServletRequest request,Model model,HttpSession session){
+    <span class="comment">//因为自定义过滤器里面放入了完整异常信息，所以这里取得的不是string而是异常类</span>
+        Object obj = request.getAttribute(FormAuthenticationFilter.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME);
+        AuthenticationException authExp = (AuthenticationException) obj;
+        <span class="keyword">if</span> (authExp != <span class="keyword">null</span>) {
+            <span class="keyword">if</span>(authExp <span class="keyword">instanceof</span> UnknownAccountException || authExp <span class="keyword">instanceof</span> IncorrectCredentialsException){
+                model.addAttribute(<span class="string">"error"</span>, <span class="string">"* 用户名或密码错误"</span>);
+            }        
+            <span class="keyword">return</span> loginPage(model);
+        }
+
+        <span class="keyword">return</span> <span class="string">"redirect:/"</span>;
+    }</code></pre></div><h2 id="总结">总结</h2><p>到此，基本的配置已经完成了，这里要注意的是，用户密码是通过sha256加密的，而且通过加盐（用户名）处理。<br>生成的时候可以这样调用:  </p>
+<div class="highlight"><pre><code class="java"><span class="keyword">new</span> Sha256Hash(password, username).toBase64()</code></pre></div><p>遗留问题: 验证码问题，这里配置只负责了用户名，密码，没有涉及到验证码，下一篇补上。  </p>
+<h2 id="补充">补充</h2><p><strong>Shiro自带过滤器</strong></p>
+<div class="highlight"><pre><code class="xml">默认过滤器(10个) 
+anon -- org.apache.shiro.web.filter.authc.AnonymousFilter
+authc -- org.apache.shiro.web.filter.authc.FormAuthenticationFilter
+authcBasic -- org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter
+perms -- org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter
+port -- org.apache.shiro.web.filter.authz.PortFilter
+rest -- org.apache.shiro.web.filter.authz.HttpMethodPermissionFilter
+roles -- org.apache.shiro.web.filter.authz.RolesAuthorizationFilter
+ssl -- org.apache.shiro.web.filter.authz.SslFilter
+user -- org.apache.shiro.web.filter.authc.UserFilter
+logout -- org.apache.shiro.web.filter.authc.LogoutFilter
+
+
+anon:例子/admins/**=anon 没有参数，表示可以匿名使用。 
+authc:例如/admins/user/**=authc表示需要认证(登录)才能使用，没有参数 
+roles：例子/admins/user/**=roles[admin],参数可以写多个，多个时必须加上引号，并且参数之间用逗号分割，当有多个参数时，例如admins/user/**=roles["admin,guest"],每个参数通过才算通过，相当于hasAllRoles()方法。 
+perms：例子/admins/user/**=perms[user:add:*],参数可以写多个，多个时必须加上引号，并且参数之间用逗号分割，例如/admins/user/**=perms["user:add:*,user:modify:*"]，当有多个参数时必须每个参数都通过才通过，想当于isPermitedAll()方法。 
+rest：例子/admins/user/**=rest[user],根据请求的方法，相当于/admins/user/**=perms[user:method] ,其中method为post，get，delete等。 
+port：例子/admins/user/**=port[8081],当请求的url的端口不是8081是跳转到schemal://serverName:8081?queryString,其中schmal是协议http或https等，serverName是你访问的host,8081是url配置里port的端口，queryString是你访问的url里的？后面的参数。 
+authcBasic：例如/admins/user/**=authcBasic没有参数表示httpBasic认证 
+ssl:例子/admins/user/**=ssl没有参数，表示安全的url请求，协议为https 
+user:例如/admins/user/**=user没有参数表示必须存在用户，当登入操作时不做检查</code></pre></div><p><strong>shiro页面标签</strong></p>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">shiro:authenticated</span>&gt;</span> 登录之后
+<span class="tag">&lt;<span class="title">shiro:notAuthenticated</span>&gt;</span> 不在登录状态时
+<span class="tag">&lt;<span class="title">shiro:guest</span>&gt;</span> 用户在没有RememberMe时
+<span class="tag">&lt;<span class="title">shiro:user</span>&gt;</span> 用户在RememberMe时
+<span class="tag">&lt;<span class="title">shiro:hasAnyRoles</span> <span class="attribute">name</span>=<span class="value">"abc,123"</span> &gt;</span> 在有abc或者123角色时
+<span class="tag">&lt;<span class="title">shiro:hasRole</span> <span class="attribute">name</span>=<span class="value">"abc"</span>&gt;</span> 拥有角色abc
+<span class="tag">&lt;<span class="title">shiro:lacksRole</span> <span class="attribute">name</span>=<span class="value">"abc"</span>&gt;</span> 没有角色abc
+<span class="tag">&lt;<span class="title">shiro:hasPermission</span> <span class="attribute">name</span>=<span class="value">"abc"</span>&gt;</span> 拥有权限abc
+<span class="tag">&lt;<span class="title">shiro:lacksPermission</span> <span class="attribute">name</span>=<span class="value">"abc"</span>&gt;</span> 没有权限abc
+<span class="tag">&lt;<span class="title">shiro:principal</span>&gt;</span> 显示用户登录名</code></pre></div><p>参考网址: <a href="http://blog.csdn.net/he90227/article/details/38663553">http://blog.csdn.net/he90227/article/details/38663553</a></p>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/spring">spring</a></li>
+            <li><a href="/tag/shiro">shiro</a></li>
+    </ul>
+</div>
+<div class="date">2014-12-07</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+</body>
+</html>

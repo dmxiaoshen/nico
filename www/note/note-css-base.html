@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>CSS常用样式</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">CSS常用样式</h2>
+<article>
+    <p><img src="http://i1153.photobucket.com/albums/p501/dmxiaoshen/hexo/hzmx_zpsdkg1ltlb.jpg" alt="标准盒子模型">  </p>
+<h2 id="盒子模型距离">盒子模型距离</h2><p>body {<strong>margin</strong>: 1em 2em 3em 4em}  </p>
+<p>等同于(&quot;上右下左&quot;)  </p>
+<p>body {<strong>margin-top</strong>:1em; <strong>margin-right</strong>:2em; <strong>margin-bottom</strong>:3em; <strong>margin-left</strong>:4em;}</p>
+<p>类似的  <strong>padding</strong> 和 <strong>border</strong> 也是如此用法。  </p>
+<h2 id="边框">边框</h2><p>p {<strong>border</strong>: thin solid #ddffdd} 边框三个参数（border-width,border-style,border-color）</p>
+<p><strong>border-width</strong>: thin medium thick  (细 中 粗)</p>
+<p><strong>border-style</strong>:dotted solid double dashed; （点 实 双 虚）</p>
+<p><strong>border-color</strong>: #fff</p>
+<p><strong>border-collapse</strong>边框是否合并 separate（分开） collapse（合并一个边框） inherit（继承父亲）</p>
+<h2 id="背景">背景</h2><p>div {<strong>background</strong>: transparent url(img.jpg) 50% 0 fixed no-repeat}</p>
+<p>对应5个属性：<strong>background-color,background-image,background-position,background-attachment,background-repeat</strong>  </p>
+<p>css3里面有一个属性 <strong>background-size</strong>:100% 0 可以用来设置背景图片拉伸。</p>
+<h2 id="字体">字体</h2><p><strong>line-height</strong>: 15px  行间距　　
+<strong>font-weight</strong>: bold 字体加粗　　
+<strong>font-size</strong>: 120% 字体大小　　
+<strong>color</strong>: #dd3f37 字体颜色　　
+<strong>font-family</strong>: Georgia 何种字体 </p>
+<h2 id="a标签">a标签</h2><p>a{<strong>text-decoration</strong>:none}  underline  overline  line-through blink  超链接下划线</p>
+<p>a:link{} 未访问　　
+a:visited{} 已访问　　
+a:hover{<strong>cursor</strong>:pointer} 鼠标悬停　　
+a:active{} 被选择　　</p>
+<p>鼠标变小手 cursor:pointer</p>
+<h2 id="ul-li标签">ul li标签</h2><p>横排 去点 </p>
+<p>ul{<strong>list-style</strong>:none; margin:0px; padding:0px; width:auto;}</p>
+<p>ul li{<strong>float</strong>:left;}</p>
+<h2 id="浮动float">浮动float</h2><p>float:right/left是子块级元素流集合面向父级元素的定位，定位的关键词使用<strong>margin/padding</strong>。兄弟块元素之间进行相对的定位均基于移动后的新位置进行重新渲染，可以重叠，原位置被清空。</p>
+<h2 id="伪元素-before和-after">伪元素:before和:after</h2><p>一般是用来清除浮动的，如 .clearfix:after{content:&quot;,&quot;; <strong>display</strong>:block; height:0; visibility:hidden; <strong>clear</strong>:both;}</p>
+<h2 id="position">position</h2><p>相对定位 <strong>postion:relative</strong> 是子块级元素面向父级元素的相对定位，定位关键字使用<strong>left/right/top/bottom</strong>。兄弟块元素之间相对进行定位，但是position移动后，原位置依然保留。而且随后的兄弟块元素定位基于被移走前的位置。</p>
+<p>绝对定位 <strong>position:absolute</strong> 元素的位置通过 &quot;left&quot;, &quot;top&quot;, &quot;right&quot; 以及 &quot;bottom&quot; 属性进行规定。</p>
+<p><strong>z-index</strong>属性，表示元素显示的层次关系（可被用于将在一个元素放置于另一元素之后）。</p>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/css">css</a></li>
+    </ul>
+</div>
+<div class="date">2015-04-17</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+</body>
+</html>

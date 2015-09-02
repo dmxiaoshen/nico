@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>log4j简单使用与配置分析</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">log4j简单使用与配置分析</h2>
+<article>
+    <h2 id="log4j-properties">log4j.properties</h2><p><!--more--></p>
+<div class="highlight"><pre><code class="xml">#设置级别和目的地
+log4j.rootLogger=debug,Console,SingleFile,RollingFile,DailyRollingFile
+
+#Console 控制台
+log4j.appender.Console=org.apache.log4j.ConsoleAppender
+log4j.appender.Console.layout=org.apache.log4j.PatternLayout
+#自定义样式  
+# %r 时间 0  
+# %t 方法名 main  
+# %p 优先级 DEBUG/INFO/WARN/ERROR  
+# %c 所属类的全名(包括包名)  
+# %l 发生的位置，在某个类的某行  
+# %m 输出代码中指定的讯息，如log(message)中的message  
+# %n 输出一个换行  
+log4j.appender.Console.layout.ConversionPattern=%d [%t] %-5p [%c] - %m%n
+# %-5p的意思是最多5个字符，不足时左对齐
+
+#SingleFile 追加文件
+log4j.appender.SingleFile=org.apache.log4j.FileAppender
+log4j.appender.SingleFile.File=D:/demo1.log
+log4j.appender.SingleFile.layout=org.apache.log4j.PatternLayout
+log4j.appender.SingleFile.layout.ConversionPattern=%d [%t] %-5p [%c] - %m%n
+
+#RollingFile 文件大小到达指定尺寸的时候产生新文件
+log4j.appender.RollingFile=org.apache.log4j.RollingFileAppender
+log4j.appender.RollingFile.MaxFileSize=100MB
+log4j.appender.RollingFile.MaxBackupIndex=10
+log4j.appender.RollingFile.File=D:/demo2.log
+log4j.appender.RollingFile.layout=org.apache.log4j.PatternLayout
+log4j.appender.RollingFile.layout.ConversionPattern=%d [%t] %-5p [%c] - %m%n
+
+#DailyRollingFile 每天产生一个日志文件
+log4j.appender.DailyRollingFile=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.DailyRollingFile.File=D:/demo3.log
+log4j.appender.DailyRollingFile.layout=org.apache.log4j.PatternLayout
+log4j.appender.DailyRollingFile.layout.ConversionPattern=%d [%t] %-5p [%c] - %m%n
+
+#设置特定包的级别
+log4j.logger.com.charles=DEBUG
+
+#log4jdbc相关,需要依赖slf4j日志框架,(日志信息如果全部为off,log4jdbc将不会生效,因此对性能没有任何影响)
+log4j.logger.jdbc.sqlonly=OFF  
+log4j.logger.jdbc.sqltiming=INFO  
+log4j.logger.jdbc.audit=OFF  
+log4j.logger.jdbc.resultset=OFF  
+log4j.logger.jdbc.connection=OFF</code></pre></div><h2 id="几个需要强调的点">几个需要强调的点</h2><p>Log4j由三个重要的组件构成：<strong>日志信息的优先级</strong>，<strong>日志信息的输出目的地</strong>，<strong>日志信息的输出格式</strong>。<br>日志信息的<strong>优先级从高到低</strong>有ERROR、WARN、 INFO、DEBUG，分别用来指定这条日志信息的重要程度；<br>日志信息的输出目的地指定了日志将打印到控制台还是文件中；而输出格式则控制了日志信息的显示内容。  </p>
+<h3 id="appender日志目的地">Appender日志目的地</h3><ul>
+<li>ConsoleAppender 目的地为控制台的Appender</li>
+<li>FileAppender 目的地为文件的Appender </li>
+<li>RollingFileAppender 目的地为大小受限的文件的Appender </li>
+<li>DailyRollingFileAppender 目的地为每天一个文件的Appender </li>
+</ul>
+<h3 id="layout日志格式化器">Layout日志格式化器</h3><ul>
+<li>org.apache.log4j.HTMLLayout(以HTML表格形式布局)</li>
+<li>org.apache.log4j.PatternLayout(可以灵活地指定布局模式)</li>
+<li>org.apache.log4j.SimpleLayout(包含日志信息的级别和信息字符串)</li>
+<li>org.apache.log4j.TTCCLayout(包含日志产生的时间、线程、类别等等信息)</li>
+</ul>
+<div class="highlight"><pre><code class="xml">#PatternLayout  
+# %r 时间 0  
+# %t 方法名 main  
+# %p 优先级 DEBUG/INFO/WARN/ERROR  
+# %c 所属类的全名(包括包名)  
+# %l 发生的位置，在某个类的某行  
+# %m 输出代码中指定的讯息，如log(message)中的message  
+# %n 输出一个换行</code></pre></div><h3 id="使用log4jdbc的好处">使用log4jdbc的好处</h3><p><strong>现大家使用的ibatis,hibernate,spring jdbc的sql日志信息，有一点个缺点是占位符与参数是分开打印的。而log4jdbc是在jdbc层的一个日志框架，可以将占位符与参数全部合并在一起显示。</strong>    </p>
+<h2 id="slf4j">slf4j</h2><p>在不使用slf4j的情况下，一般为了提高效率，可以这么写:  </p>
+<div class="highlight"><pre><code class="java"><span class="comment">// 记录debug级别的信息</span>
+<span class="keyword">if</span> (logger.isDebugEnabled()) {
+    logger.debug(<span class="string">"This is debug message from Dao."</span>);
+}
+
+<span class="comment">// 记录info级别的信息</span>
+<span class="keyword">if</span> (logger.isInfoEnabled()) {
+    logger.info(<span class="string">"This is info message from Dao."</span>);
+}
+
+<span class="comment">// 记录error级别的信息</span>
+logger.error(<span class="string">"This is error message from Dao."</span>);</code></pre></div><p>如果用slf4j,则可以这么写:  </p>
+<div class="highlight"><pre><code class="java">logger.debug(<span class="string">"Processing trade with id: {} and symbol : {} "</span>, id, symbol);
+logger.debug(<span class="string">"Value {} was inserted between {} and {}."</span>, <span class="keyword">new</span> Object[] {newVal, below, above});<span class="comment">//多个参数</span></code></pre></div><p><strong>为什么这么做？</strong>  </p>
+<blockquote>
+<p>占位符(place holder)，在代码中表示为&quot;{}&quot;的特性。占位符是一个非常类似于在String的format()方法中的%s，因为它会在运行时被某个提供的实际字符串所替换。这不仅降低了你代码中字符串连接次数，而且还节省了新建的String对象。即使你可能没需要那些对象，但这个依旧成立，取决于你的生产环境的日志级别，例如在DEBUG或者INFO级别的字符串连接。因为String对象是不可修改的并且它们建立在一个String池中，它们消耗堆内存( heap memory)而且大多数时间他们是不被需要的，例如当你的应用程序在生产环境以ERROR级别运行时候，一个String使用在DEBUG语句就是不被需要的。通过使用SLF4J,你可以在运行时延迟字符串的建立，这意味着只有需要的String对象才被建立。而如果你已经使用log4j，那么你已经对于在if条件中使用debug语句这种变通方案十分熟悉了，但SLF4J的占位符就比这个好用得多。  </p>
+<ol>
+<li>在你的开源或内部类库中使用SLF4J会使得它独立于任何一个特定的日志实现，这意味着不需要管理多个日志配置或者多个日志类库，你的客户端会很感激这点。</li>
+<li>SLF4J提供了基于占位符的日志方法，这通过去除检查isDebugEnabled(), isInfoEnabled()等等，提高了代码可读性。</li>
+<li>通过使用SLF4J的日志方法，你可以延迟构建日志信息（Srting）的开销，直到你真正需要，这对于内存和CPU都是高效的。</li>
+<li>作为附注，更少的暂时的字符串意味着垃圾回收器（Garbage Collector）需要做更好的工作，这意味着你的应用程序有为更好的吞吐量和性能。</li>
+<li>这些好处只是冰山一角，你将在开始使用SL4J和阅读其中代码的时候知道更多的好处。我强烈建议，任何一个新的Java程序员，都应该使用SLF4J做日志而不是使用包括Log4J在内的其他日志API。</li>
+</ol>
+</blockquote>
+<p>一般spring中配置log4j，只需在web.xml文件中加入:</p>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">context-param</span>&gt;</span>
+ <span class="tag">&lt;<span class="title">param-name</span>&gt;</span>log4jConfigLocation<span class="tag">&lt;/<span class="title">param-name</span>&gt;</span>
+ <span class="tag">&lt;<span class="title">param-value</span>&gt;</span>\WEB-INF\classes\log4j.properties<span class="tag">&lt;/<span class="title">param-value</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">context-param</span>&gt;</span></code></pre></div><p>如果是maven管理,在pom.xml文件中加入依赖(log4j包会被当做slf4j的依赖相关包导入进来):</p>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">dependency</span>&gt;</span>
+ <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span>
+ <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>slf4j-log4j12<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span>
+ <span class="tag">&lt;<span class="title">version</span>&gt;</span>1.6.4<span class="tag">&lt;/<span class="title">version</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></code></pre></div><p>参考网址:<br><a href="http://www.iteye.com/topic/378077">http://www.iteye.com/topic/378077</a><br><a href="http://blog.csdn.net/kobejayandy/article/details/17306613">http://blog.csdn.net/kobejayandy/article/details/17306613</a></p>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/log4j">log4j</a></li>
+            <li><a href="/tag/slf4j">slf4j</a></li>
+    </ul>
+</div>
+<div class="date">2014-11-24</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>springMVC数据绑定问题</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">springMVC数据绑定问题</h2>
+<article>
+    <h2 id="问题来了">问题来了</h2><p><strong>我们在用spring mvc时，如果需要传递日期参数，spring mvc默认是不支持string直接转date的，要报错，咋办？</strong></p>
+<h2 id="方法一">方法一</h2><p><!--more-->
+使用@InitBinder。在所需要的controller类中加入如下代码:  </p>
+<div class="highlight"><pre><code class="java"><span class="annotation">@InitBinder</span>
+    <span class="keyword">public</span> <span class="keyword">void</span> initBinder(WebDataBinder binder) {
+        SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>);
+        dateFormat.setLenient(<span class="keyword">false</span>);
+        binder.registerCustomEditor(Date.<span class="class"><span class="keyword">class</span>, <span class="title">new</span> <span class="title">CustomDateEditor</span>(
+                <span class="title">dateFormat</span>, <span class="title">false</span>));
+    }</span></code></pre></div><h2 id="方法二">方法二</h2><p>继承WebBindingInitializer接口实现全局注册。写一个类：  </p>
+<div class="highlight"><pre><code class="java"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomerBinding</span> <span class="keyword">implements</span> <span class="title">WebBindingInitializer</span> </span>{
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> <span class="keyword">void</span> initBinder(WebDataBinder binder, WebRequest request) {
+        SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>);
+        dateFormat.setLenient(<span class="keyword">false</span>);
+        binder.registerCustomEditor(Date.<span class="class"><span class="keyword">class</span>, <span class="title">new</span> <span class="title">CustomDateEditor</span>(
+                <span class="title">dateFormat</span>, <span class="title">false</span>));
+
+    }</span></code></pre></div><p>修改spring-mvc.xml配置文件:  </p>
+<div class="highlight"><pre><code class="xml">  <span class="tag">&lt;<span class="title">bean
+</span>        <span class="attribute">class</span>=<span class="value">"org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"webBindingInitializer"</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">bean
+</span>                <span class="attribute">class</span>=<span class="value">"net.zhepu.web.customerBinding.CustomerBinding"</span> /&gt;</span>
+        <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">bean</span>&gt;</span></code></pre></div><p><strong>但是美中不足的是，这样一来，因为手动去注册了AnnotationMethodHandlerAdapter类，导致无法使用<code>&lt;mvc:annotation-driven/&gt;</code></strong>。</p>
+<h2 id="方法三">方法三</h2><p>使用自定义转换器。配置文件如下:  </p>
+<div class="highlight"><pre><code class="xml">
+<span class="tag">&lt;<span class="title">mvc:annotation-driven</span> <span class="attribute">conversion-service</span>=<span class="value">"conversionService"</span> /&gt;</span>
+
+<span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"conversionService"</span>
+        <span class="attribute">class</span>=<span class="value">"org.springframework.format.support.FormattingConversionServiceFactoryBean"</span>&gt;</span>
+
+        <span class="tag">&lt;<span class="title">property</span> <span class="attribute">name</span>=<span class="value">"converters"</span>&gt;</span>
+            <span class="tag">&lt;<span class="title">list</span>&gt;</span>
+                <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">class</span>=<span class="value">"com.dmxiaoshen.converter.CustomerConverter"</span> /&gt;</span>
+            <span class="tag">&lt;/<span class="title">list</span>&gt;</span>
+        <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;/<span class="title">bean</span>&gt;</span></code></pre></div><p>CustomerConverter类如下:</p>
+<div class="highlight"><pre><code class="java"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomerConverter</span> <span class="keyword">implements</span> <span class="title">Converter</span>&lt;<span class="title">String</span>, <span class="title">Date</span>&gt; </span>{
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> Date convert(String source) {
+        SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>);
+        dateFormat.setLenient(<span class="keyword">false</span>);
+        <span class="keyword">try</span> {
+            <span class="keyword">return</span> dateFormat.parse(source);
+        } <span class="keyword">catch</span> (ParseException e) {
+            <span class="comment">// TODO Auto-generated catch block</span>
+            e.printStackTrace();
+        }        
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+    }</code></pre></div><h2 id="对于requestbody或httpentity中数据的类型转换">对于requestBody或httpEntity中数据的类型转换</h2><p>Spring MVC中对于requestBody中发送的数据转换不是通过databind来实现，而是使用HttpMessageConverter来实现具体的类型转换。<br>例如，之前提到的json格式的输入，在将json格式的输入转换为具体的model的过程中，spring mvc首先找出request header中的contenttype，<br>再遍历当前所注册的所有的HttpMessageConverter子类， 根据子类中的canRead()方法来决定调用哪个具体的子类来实现对requestBody中的数据的解析。<br>如果当前所注册的httpMessageConverter中都无法解析对应contexttype类型，则抛出HttpMediaTypeNotSupportedException （http 415错误）。<br>那么需要如何注册自定义的messageConverter呢，很不幸，在spring 3.0.5中如果使用annotation-driven的配置方式的话，<br>无法实现自定义的messageConverter的配置，必须老老实实的自己定义AnnotationMethodHandlerAdapter的bean定义，<br>再设置其messageConverters以注册自定义的messageConverter。 在3.1版本中，将增加annotation-driven对自定义的messageConverter的支持 (SPR-7504)，具体格式如下</p>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">mvc:annotation-driven</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">mvc:message-converters</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">class</span>=<span class="value">"org.springframework.http.converter.StringHttpMessageConverter"</span>/&gt;</span>
+        <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">class</span>=<span class="value">"org.springframework.http.converter.ResourceHttpMessageConverter"</span>/&gt;</span>
+        <span class="tag">&lt;<span class="title">bean</span> <span class="attribute">class</span>=<span class="value">"org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"</span>/&gt;</span>
+    <span class="tag">&lt;/<span class="title">mvc:message-converters</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">mvc:annotation-driven</span>&gt;</span></code></pre></div><p>参考网址: <a href="http://www.cnblogs.com/crazy-fox/archive/2012/02/18/2357699.html">http://www.cnblogs.com/crazy-fox/archive/2012/02/18/2357699.html</a></p>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/spring">spring</a></li>
+            <li><a href="/tag/springMVC">springMVC</a></li>
+    </ul>
+</div>
+<div class="date">2014-12-01</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+</body>
+</html>

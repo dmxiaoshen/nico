@@ -17,7 +17,7 @@ ECharts图表的简单使用。
 首先去[ECharts](http://echarts.baidu.com/doc/example.html)官网下载文件(右上角的下载按钮),下载完后解压，进入到**doc\example\www**目录，  
 会看到有有一个名叫js的文件夹，没错就是这里，在这里新建一个html文件，如test.html,内容如下:  
 
-```javascript
+```xml
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -103,7 +103,7 @@ function callBackDraw(ec){
 
 进入到**doc\example\www2**目录，新建一个test.html文件，内容如下:  
 
-```javascript
+```xml
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

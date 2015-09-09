@@ -40,8 +40,8 @@
 </blockquote>
 <p><!--more--></p>
 <h2 id="准备">准备</h2><p>首先去<a href="http://echarts.baidu.com/doc/example.html">ECharts</a>官网下载文件(右上角的下载按钮),下载完后解压，进入到<strong>doc\example\www</strong>目录，<br>会看到有有一个名叫js的文件夹，没错就是这里，在这里新建一个html文件，如test.html,内容如下:  </p>
-<div class="highlight"><pre><code class="javascript">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;
-<span class="xml"><span class="tag">&lt;<span class="title">head</span>&gt;</span>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">html</span> <span class="attribute">xmlns</span>=<span class="value">"http://www.w3.org/1999/xhtml"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">head</span>&gt;</span>
 <span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"Content-Type"</span> <span class="attribute">content</span>=<span class="value">"text/html; charset=utf-8"</span> /&gt;</span>
 <span class="tag">&lt;<span class="title">title</span>&gt;</span>ECharts示例<span class="tag">&lt;/<span class="title">title</span>&gt;</span>
 <span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span> <span class="attribute">src</span>=<span class="value">"js/echarts.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
@@ -118,10 +118,10 @@ require([<span class="string">'echarts'</span>,<span class="string">'echarts/cha
 }
 </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
 <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">html</span>&gt;</span></span></code></pre></div><p>这里涉及到require，可能会比较麻烦，还有更简单的，<strong>另一种用法</strong>  </p>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></code></pre></div><p>这里涉及到require，可能会比较麻烦，还有更简单的，<strong>另一种用法</strong>  </p>
 <p>进入到<strong>doc\example\www2</strong>目录，新建一个test.html文件，内容如下:  </p>
-<div class="highlight"><pre><code class="javascript">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;
-<span class="xml"><span class="tag">&lt;<span class="title">head</span>&gt;</span>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">html</span> <span class="attribute">xmlns</span>=<span class="value">"http://www.w3.org/1999/xhtml"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">head</span>&gt;</span>
 <span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"Content-Type"</span> <span class="attribute">content</span>=<span class="value">"text/html; charset=utf-8"</span> /&gt;</span>
 <span class="tag">&lt;<span class="title">title</span>&gt;</span>ECharts示例<span class="tag">&lt;/<span class="title">title</span>&gt;</span>
 <span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span> <span class="attribute">src</span>=<span class="value">"js/echarts-all.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
@@ -188,7 +188,7 @@ require([<span class="string">'echarts'</span>,<span class="string">'echarts/cha
 
 </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
 <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">html</span>&gt;</span></span></code></pre></div><p>会看到和第一种方法一样的饼图，具体用哪种，可根据需求选择。  </p>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></code></pre></div><p>会看到和第一种方法一样的饼图，具体用哪种，可根据需求选择。  </p>
 <p>简单的介绍就到这里，权且当做抛砖引玉。</p>
 
 </article>
@@ -219,5 +219,15 @@ require([<span class="string">'echarts'</span>,<span class="string">'echarts/cha
 <script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
 
     <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+	<script>
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?84405cc8993d00d19f760d6fa7ec02ca";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+	</script>
+
 </body>
 </html>

@@ -101,8 +101,8 @@
         <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>commons-codec<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span>
         <span class="tag">&lt;<span class="title">version</span>&gt;</span>1.6<span class="tag">&lt;/<span class="title">version</span>&gt;</span>
   <span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></code></pre></div><p>后台接收文件:</p>
-<div class="highlight"><pre><code class="javascript">    @RequestMapping(value = <span class="string">"/upload"</span>, method = RequestMethod.POST)
-    public String upload(MultipartFile fileName, HttpServletRequest request,
+<div class="highlight"><pre><code class="cpp">    @RequestMapping(value = <span class="string">"/upload"</span>, method = RequestMethod.POST)
+    <span class="keyword">public</span> String upload(MultipartFile fileName, HttpServletRequest request,
             HttpServletResponse response) {
         <span class="keyword">try</span> {
 
@@ -117,8 +117,8 @@
 
     }</code></pre></div><p>下载文件就比较简单了，前台:</p>
 <div class="highlight"><pre><code class="javascript">&lt;a href=<span class="string">'rest/controller/get/1'</span>&gt;Click&lt;<span class="regexp">/a&gt;</span></code></pre></div><p>Controller处理:</p>
-<div class="highlight"><pre><code class="javascript">    @RequestMapping(value = <span class="string">"/get/{id}"</span>, method = RequestMethod.GET)
-    public <span class="keyword">void</span> download(HttpServletRequest request, HttpServletResponse response,
+<div class="highlight"><pre><code class="cpp">    @RequestMapping(value = <span class="string">"/get/{id}"</span>, method = RequestMethod.GET)
+    <span class="keyword">public</span> <span class="keyword">void</span> download(HttpServletRequest request, HttpServletResponse response,
             @PathVariable String id) {
 
         String fileName = <span class="string">"a.txt"</span>;<span class="comment">//通过id去获取文件名,这里简单处理写死</span>
@@ -126,7 +126,7 @@
         <span class="keyword">try</span> {
             response.setContentType(<span class="string">"application/octet-stream; charset=utf-8"</span>);
             String agent = request.getHeader(<span class="string">"User-Agent"</span>);
-            <span class="keyword">if</span> (agent != <span class="literal">null</span>) {
+            <span class="keyword">if</span> (agent != null) {
                 agent = agent.toLowerCase();
                 <span class="keyword">if</span> (agent.indexOf(<span class="string">"firefox"</span>) != -<span class="number">1</span>) {
                     <span class="comment">// 解决空格会截断问题</span>

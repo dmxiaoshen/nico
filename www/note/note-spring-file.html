@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>springMVC文件上传下载</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">springMVC文件上传下载</h2>
+<article>
+    <p>点<a href="https://github.com/hmkcode/Spring-Framework">这里</a> 有很多Spring相关的项目demo。</p>
+<p>回到正题，文件上传无非就是前台选择文件，后台Controller接收文件然后处理。</p>
+<p>页面需要引入以下js及css</p>
+<div class="highlight"><pre><code class="javascript">&lt;script src=<span class="string">"js/jquery.1.9.1.min.js"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"js/vendor/jquery.ui.widget.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"js/jquery.iframe-transport.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"js/jquery.fileupload.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+
+<span class="comment">&lt;!-- bootstrap just to have good looking page --&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"bootstrap/js/bootstrap.min.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">link</span> <span class="attribute">href</span>=<span class="value">"bootstrap/css/bootstrap.css"</span> <span class="attribute">type</span>=<span class="value">"text/css"</span> <span class="attribute">rel</span>=<span class="value">"stylesheet"</span> /&gt;</span></span></code></pre></div><p>上传按钮可以这么写:</p>
+<div class="highlight"><pre><code class="javascript">&lt;input style=<span class="string">"display:none"</span> id=<span class="string">"fileupload"</span> type=<span class="string">"file"</span> name=<span class="string">"fileName"</span> data-url=<span class="string">"rest/controller/upload"</span>&gt;
+<span class="xml"><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"button"</span> <span class="attribute">value</span>=<span class="value">"上传文件"</span> <span class="attribute">id</span>=<span class="value">"upButton"</span> /&gt;</span></span></code></pre></div><p>相应的js这样写:</p>
+<div class="highlight"><pre><code class="javascript">    $(<span class="string">"#upButton"</span>).click(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
+         $(<span class="string">'#fileupload'</span>).click();<span class="comment">//这里把fileupload隐藏起来了，通过别的按钮来出发点击事件</span>
+    });
+
+    $(<span class="string">'#fileupload'</span>).fileupload({
+        dataType: <span class="string">'json'</span>,
+        drop: <span class="function"><span class="keyword">function</span> <span class="params">(e, data)</span> {</span>
+            <span class="keyword">return</span> <span class="literal">true</span>;
+        },change: <span class="function"><span class="keyword">function</span> <span class="params">(e, data)</span> {</span>            
+            <span class="keyword">return</span> <span class="literal">true</span>;                  
+        },add: <span class="function"><span class="keyword">function</span> <span class="params">(e, data)</span> {</span>
+            maxFileSize = <span class="number">10000000</span>; <span class="comment">// 10MB</span>
+            minFileSize = <span class="number">1</span>;
+            acceptFileTypes=<span class="regexp">/(\.|\/)(gif|jpe?g|png)$/i</span>;
+            file = data.files[<span class="number">0</span>];
+            <span class="keyword">if</span>(file.size&lt;minFileSize){
+                alert(<span class="string">"文件不能为空或是文件夹"</span>);
+                <span class="keyword">return</span> <span class="literal">false</span>;
+            }
+            <span class="keyword">if</span>(file.size&gt;maxFileSize){
+                alert(<span class="string">"文件大小不能大于10M"</span>);
+                <span class="keyword">return</span> <span class="literal">false</span>;
+            }
+            <span class="keyword">if</span> (!acceptFileTypes.test(file.type) &amp;&amp; !acceptFileTypes.test(file.name)){
+                alert(<span class="string">"只能上传图片"</span>);
+                <span class="keyword">return</span> <span class="literal">false</span>;
+            }
+
+            data.submit().success(<span class="function"><span class="keyword">function</span> <span class="params">(result, textStatus, jqXHR)</span> {</span>
+                <span class="keyword">if</span>(result==<span class="string">"success"</span>){
+                    alert(<span class="string">"文件上传成功"</span>);
+                }<span class="keyword">else</span>{
+                    alert(<span class="string">"文件上传失败"</span>);
+                 }
+
+            }).error(<span class="function"><span class="keyword">function</span> <span class="params">(jqXHR, textStatus, errorThrown)</span> {</span>
+                alert(errorThrown);
+            });
+         }
+
+    });</code></pre></div><p>后台代码开始前，需要配置spring-MVC.xml,要增加对文件上传的支持：</p>
+<div class="highlight"><pre><code class="xml"><span class="tag">&lt;<span class="title">bean</span> <span class="attribute">id</span>=<span class="value">"multipartResolver"</span>  <span class="attribute">class</span>=<span class="value">"org.springframework.web.multipart.commons.CommonsMultipartResolver"</span>/&gt;</span></code></pre></div><p>然后需要jar包(spring那些就不贴了):</p>
+<div class="highlight"><pre><code class="xml">    <span class="tag">&lt;<span class="title">dependency</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>commons-io<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>commons-io<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4<span class="tag">&lt;/<span class="title">version</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">dependency</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">dependency</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">groupId</span>&gt;</span>commons-codec<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>commons-codec<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">version</span>&gt;</span>1.6<span class="tag">&lt;/<span class="title">version</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></code></pre></div><p>后台接收文件:</p>
+<div class="highlight"><pre><code class="javascript">    @RequestMapping(value = <span class="string">"/upload"</span>, method = RequestMethod.POST)
+    public String upload(MultipartFile fileName, HttpServletRequest request,
+            HttpServletResponse response) {
+        <span class="keyword">try</span> {
+
+            FileUtils.copyInputStreamToFile(fileName.getInputStream(),
+                    <span class="keyword">new</span> File(<span class="string">"D:/temp/files/"</span>, fileName.getOriginalFilename()));
+
+        } <span class="keyword">catch</span> (Exception e) {
+            e.printStackTrace();
+        }
+
+        <span class="keyword">return</span> <span class="string">"success"</span>;
+
+    }</code></pre></div><p>下载文件就比较简单了，前台:</p>
+<div class="highlight"><pre><code class="javascript">&lt;a href=<span class="string">'rest/controller/get/1'</span>&gt;Click&lt;<span class="regexp">/a&gt;</span></code></pre></div><p>Controller处理:</p>
+<div class="highlight"><pre><code class="javascript">    @RequestMapping(value = <span class="string">"/get/{id}"</span>, method = RequestMethod.GET)
+    public <span class="keyword">void</span> download(HttpServletRequest request, HttpServletResponse response,
+            @PathVariable String id) {
+
+        String fileName = <span class="string">"a.txt"</span>;<span class="comment">//通过id去获取文件名,这里简单处理写死</span>
+        String filePath = <span class="string">"D:/temp/files/a.txt"</span>;<span class="comment">//通过id去获取文件保存路径,这里简单处理写死</span>
+        <span class="keyword">try</span> {
+            response.setContentType(<span class="string">"application/octet-stream; charset=utf-8"</span>);
+            String agent = request.getHeader(<span class="string">"User-Agent"</span>);
+            <span class="keyword">if</span> (agent != <span class="literal">null</span>) {
+                agent = agent.toLowerCase();
+                <span class="keyword">if</span> (agent.indexOf(<span class="string">"firefox"</span>) != -<span class="number">1</span>) {
+                    <span class="comment">// 解决空格会截断问题</span>
+                    fileName = <span class="string">"=?UTF-8?B?"</span>
+                            + (<span class="keyword">new</span> String(Base64.encodeBase64(fileName
+                                    .getBytes(<span class="string">"UTF-8"</span>)))) + <span class="string">"?="</span>;
+                } <span class="keyword">else</span> <span class="keyword">if</span> (agent.indexOf(<span class="string">"msie"</span>) != -<span class="number">1</span>) {
+                    fileName = URLEncoder.encode(fileName, <span class="string">"UTF-8"</span>);
+                    fileName = fileName.replaceAll(<span class="string">"\\+"</span>, <span class="string">"%20"</span>); <span class="comment">// 解决编码后空格变+号的情况</span>
+                } <span class="keyword">else</span> <span class="keyword">if</span> (agent.indexOf(<span class="string">"chrome"</span>) != -<span class="number">1</span>) {
+                    fileName = <span class="string">"=?UTF-8?B?"</span>
+                            + (<span class="keyword">new</span> String(Base64.encodeBase64(fileName
+                                    .getBytes(<span class="string">"UTF-8"</span>)))) + <span class="string">"?="</span>;
+                } <span class="keyword">else</span> {
+                    fileName = <span class="string">"=?UTF-8?B?"</span>
+                            + (<span class="keyword">new</span> String(Base64.encodeBase64(fileName
+                                    .getBytes(<span class="string">"UTF-8"</span>)))) + <span class="string">"?="</span>;
+                }
+            }
+            response.setHeader(<span class="string">"Content-disposition"</span>, <span class="string">"attachment; filename=\""</span>
+                    + fileName + <span class="string">"\""</span>);
+            FileCopyUtils.copy(<span class="keyword">new</span> FileInputStream(<span class="keyword">new</span> File(filePath)),
+                    response.getOutputStream());
+        } <span class="keyword">catch</span> (IOException e) {
+            e.printStackTrace();
+        }
+    }</code></pre></div><p>至此，简单的springMVC文件上传下载功能就完成了。</p>
+
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/spring">spring</a></li>
+            <li><a href="/tag/springMVC">springMVC</a></li>
+            <li><a href="/tag/文件">文件</a></li>
+    </ul>
+</div>
+<div class="date">2015-09-10</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+	<script>
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?84405cc8993d00d19f760d6fa7ec02ca";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+	</script>
+
+</body>
+</html>

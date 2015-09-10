@@ -104,7 +104,7 @@ web开发难免会碰到文件上传下载这样的功能。
 
 后台接收文件:
 
-```javascript
+```cpp
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public String upload(MultipartFile fileName, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -131,7 +131,7 @@ web开发难免会碰到文件上传下载这样的功能。
 
 Controller处理:
 
-```javascript
+```cpp
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
 	public void download(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable String id) {

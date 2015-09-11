@@ -1,4 +1,4 @@
-# spring自带的Scheduled定时任务功能
+# spring自带的@Scheduled定时任务功能
 
 - pubdate: 2015-09-11 11:23:00
 - tags: spring, quartz

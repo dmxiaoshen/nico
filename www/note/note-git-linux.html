@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>git的push命令免去用户名密码以及设置ssh-key</title>
+	<link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="../static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../static/css/prettify.css" />
+</head>
+<body>
+    <div id="primary">
+        <header id="header">
+    <h1 id="site-title">
+        <a href="/" title="dmxiaoshen's Blog" rel="home">
+            dmxiaoshen's Blog
+        </a>
+    </h1>
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="/note/">
+                    晴耕
+                </a>
+            </li>
+            <li>
+                <a href="/article/">
+                    雨读
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+        <section id="content">
+<h2 class="post_title">git的push命令免去用户名密码以及设置ssh-key</h2>
+<article>
+    <p>当然我们先得搞清楚为什么会有这个情况，其实是因为git有两种提交方式ssh和https。前一种方式需要配置ssh-key，然后push的时候不用输入用户名密码。后一种就是需要用户名密码啦。</p>
+<p>看到这里，你或许已经猜到解决方法了，没错，就是url配置成ssh提交。</p>
+<p>进入正题:</p>
+<p>查看.git/config文件会发现</p>
+<div class="highlight"><pre><code class="python">[remote <span class="string">"origin"</span>]  
+fetch = + refs/heads/*:refs/remotes/origin/*  
+url = https://username<span class="decorator">@github.com/username/projectname.git</span></code></pre></div><p>果然是https提交方式.</p>
+<p>需要改为:</p>
+<div class="highlight"><pre><code class="python"> [remote <span class="string">"origin"</span>]  
+ fetch = + refs/heads/*:refs/remotes/origin/*  
+ url = git<span class="decorator">@github.com:username/projectname.git</span></code></pre></div><p>到这里其实已经从https提交变成ssh提交了。接下来要去github页面设置ssh-key信息。</p>
+<p>等等，还要生成ssh-key信息呢。</p>
+<p>确保本机安装了ssh。</p>
+<h2 id="检查ssh公钥">检查SSH公钥</h2><p>cd ~/.ssh</p>
+<p>看看存不存在.ssh，如果存在的话，掠过下一步；不存在的请看下一步</p>
+<h2 id="生成ssh公钥">生成SSH公钥</h2><div class="highlight"><pre><code class="python">$ ssh-keygen -t rsa -C <span class="string">"your_email@youremail.com"</span> 
+<span class="comment"># Creates a new ssh key using the provided email Generating public/private rsa key pair. </span>
+Enter file <span class="keyword">in</span> which to save the key (/home/you/.ssh/id_rsa):</code></pre></div><p>现在你可以看到，在自己的目录下，有一个.ssh目录，说明成功了</p>
+<h2 id="输入密码">输入密码</h2><p>这里要注意了，这的密码是指在验证连接的时候的密码，看本文标题我们知道，验证的时候我们不想要输入密码，所以这里不设置密码，也就是empty，直接按回车。</p>
+<div class="highlight"><pre><code class="python">Enter passphrase (empty <span class="keyword">for</span> no passphrase): [Type a passphrase]   
+Enter same passphrase again: [Type passphrase again]</code></pre></div><h2 id="进入-ssh目录">进入.ssh目录</h2><p>cd ~/.ssh</p>
+<p>会看到 id_rsa和id_rsa.pub 文件,请复制id_rsa.pub文件里面的内容，下一步有用。</p>
+<h2 id="添加ssh公钥到github">添加SSH公钥到github</h2><p>打开github，找到账户里面添加SSH，把idrsa.pub内容复制到key里面。</p>
+<h2 id="测试是否生效">测试是否生效</h2><p>使用下面的命令测试
+ssh -T git@github.com</p>
+<p>当你看到这些内容放入时候，直接yes</p>
+<div class="highlight"><pre><code class="python">The authenticity of host 'github.com (207.97.227.239)' can't be established. 
+RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48. 
+Are you sure you want to continue connecting (yes/no)?</code></pre></div><p>看到这个内容放入时候，说明就成功了。</p>
+<div class="highlight"><pre><code class="python">Hi username! 
+Yo<span class="string">u've successfully authenticated, but GitHub does not provide shell access.</span></code></pre></div>
+</article>
+<div class="meta">
+    <ul class="tags">
+            <li><a href="/tag/git">git</a></li>
+            <li><a href="/tag/linux">linux</a></li>
+    </ul>
+</div>
+<div class="date">2015-09-12</div>
+<div class="ds-thread"></div>
+<script type="text/javascript">
+	var duoshuoQuery = {short_name:"dmxiaoshen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+</script>
+            <!-- Duoshuo Comment END -->
+
+        </section>
+    </div>
+    <footer>
+    © 2015-2016 dmxiaoshen's Blog | Powered by <a href="http://lab.lepture.com/nico/" target="_blank">Nico</a>
+</footer>
+<script defer async type="text/javascript" src="//hm.baidu.com/h.js?f10c9b0005de625e589f7dc9804b2787"></script>
+
+    <script defer async type="text/javascript" src="../static/js/run_prettify.js"></script>
+	<script>
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?84405cc8993d00d19f760d6fa7ec02ca";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+	</script>
+
+</body>
+</html>
